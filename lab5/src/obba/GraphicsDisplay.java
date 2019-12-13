@@ -32,6 +32,7 @@ public class GraphicsDisplay extends JPanel {
 	
 	private Point2D.Double cursor = xyToPoint(0,0);
 	private Point2D.Double cursor_end = xyToPoint(0,0);
+	private Point2D.Double marker = xyToPoint(0,0);
 	
 	AffineTransform prev_at= new AffineTransform(1.0,0.0,0.0,1.0,0.0,0.0);
 	AffineTransform at= new AffineTransform(1.0,0.0,0.0,1.0, 0, 0);
@@ -68,6 +69,20 @@ public class GraphicsDisplay extends JPanel {
 		this.graphicsData = graphicsData;
 		prev_rect.setFrame(000.0,000.0,getWidth(),getHeight());
 		rect.setFrame(000.0,000.0,getWidth(),getHeight());
+		prev_at = new AffineTransform(1.0,0.0,0.0,1.0,0.0,0.0);
+		at = new AffineTransform(1.0,0.0,0.0,1.0,0.0,0.0);
+		minX = graphicsData[0][0];
+		maxX = graphicsData[graphicsData.length - 1][0];
+		minY = graphicsData[0][1];
+		maxY = minY;
+		for (int i = 1; i < graphicsData.length; i++) {
+			if (graphicsData[i][1] < minY) {
+				minY = graphicsData[i][1];
+			}
+			if (graphicsData[i][1] > maxY) {
+				maxY = graphicsData[i][1];
+			}
+		}
 		repaint();
 	}
 
@@ -104,18 +119,7 @@ public class GraphicsDisplay extends JPanel {
 		super.paintComponent(g);
 		if (graphicsData == null || graphicsData.length == 0)
 			return;
-		minX = graphicsData[0][0];
-		maxX = graphicsData[graphicsData.length - 1][0];
-		minY = graphicsData[0][1];
-		maxY = minY;
-		for (int i = 1; i < graphicsData.length; i++) {
-			if (graphicsData[i][1] < minY) {
-				minY = graphicsData[i][1];
-			}
-			if (graphicsData[i][1] > maxY) {
-				maxY = graphicsData[i][1];
-			}
-		}
+		
 		double w = getSize().getWidth();
 		double h = getSize().getHeight();
 		
@@ -179,11 +183,12 @@ public class GraphicsDisplay extends JPanel {
 	{
 		double w = getSize().getWidth();
 		double h = getSize().getHeight();
-        AffineTransform at = canvas.getTransform();
-        at.rotate(-Math.PI/2, 0,0);
-        at.translate(-h,0);
-		at.concatenate(new AffineTransform(h/w,0,0,w/h,0,0));
-		canvas.setTransform(at);
+        AffineTransform at1 = new AffineTransform(1.0,0.0,0.0,1.0,0.0,0.0);
+        at1.rotate(-Math.PI/2, 0,0);
+        at1.translate(-h,0);
+		at1.concatenate(new AffineTransform(h/w,0,0,w/h,0,0));
+		at1.concatenate(at);
+		canvas.setTransform(at1);
 		//isRotated=false;
 	}
 	
@@ -213,8 +218,7 @@ public class GraphicsDisplay extends JPanel {
 					isDraggedRect=false;
 					isDraggedMark=true;
 				    point[1]=maxY-cursor_end.getY()/scaleY;
-				    a1=cursor.getX()*rect.width/w + rect.x;
-					a2=cursor.getY()*rect.height/h + rect.y;
+				    marker=xyToPoint(point[0],point[1]);
 				}
 				Rectangle2D.Double coordinates = new Rectangle2D.Double();
 				Rectangle2D bounds = coordFont.getStringBounds((center.getX()/scaleX+minX)+","+ (maxY-center.getY()/scaleY), context);
@@ -475,27 +479,14 @@ public class GraphicsDisplay extends JPanel {
 	
 	protected void paintScaled(Graphics2D canvas)
 	{
-		
-		double w = getSize().getWidth();
-		double h = getSize().getHeight();
-		
-		
-		Double a1=new_rect.x-rect.x; 
-		Double a2=new_rect.y-rect.y; 
-		
-		Double a5=cursor.getX()*rect.width/w + rect.x;
-		Double a6=cursor.getY()*rect.height/h + rect.y; 
-		Double a3=cursor.getX(); 
-		Double a4=cursor.getY();
-		
 		double per_x=rect.width/new_rect.width;
 		double per_y=rect.height/new_rect.height;
+		Double a1=new_rect.x-rect.x/per_x; 
+		Double a2=new_rect.y-rect.y/per_y;
 		System.out.println(at.getScaleX());
-		double scaleX1=at.getScaleX();
-		double scaleY1=at.getScaleY();
 
 		at.concatenate(new AffineTransform(per_x,0.0,0.0,per_y,0,0));
-		at.translate(-a1+(a3-a5*w/((maxX-minX)*scaleX*scaleX1)),-a2+(a4-a6*h/((maxY-minY)*scaleY*scaleY1)));
+		at.translate(-a1,-a2);
 		
 		
 		prev_at=canvas.getTransform();
@@ -576,6 +567,8 @@ public class GraphicsDisplay extends JPanel {
 				if(!isDraggedMark)
 			isDraggedRect=true;
 			setCursor_e(e.getX(),e.getY());
+				if(isDraggedMark)
+					setCursor(marker.getX(),marker.getY());
 			}
 		};
 	}

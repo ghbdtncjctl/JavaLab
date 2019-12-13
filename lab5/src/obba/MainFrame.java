@@ -131,7 +131,7 @@ public class MainFrame extends JFrame {
 			if (graphicsData != null && graphicsData.length > 0) {
 				fileLoaded = true;
 				display.showGraphics(graphicsData);
-				//saveMenuItem.setEnabled(true);
+				saveMenuItem.setEnabled(true);
 			}
 			in.close();
 		} catch (FileNotFoundException ex) {
