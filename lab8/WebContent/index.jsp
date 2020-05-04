@@ -1,15 +1,15 @@
 <%@page language="java" contentType="text/html; charset=UTF-8"
-pageEncoding="UTF-8" %>
+	pageEncoding="UTF-8"%>
 <%-- Импортировать JSTL-библиотеку --%>
-<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%-- Импортировать собственную библиотеку теговых файлов --%>
-<%@taglib prefix="my" tagdir="/WEB-INF/tags" %>
+<%@taglib prefix="my" tagdir="/WEB-INF/tags"%>
 <%-- Импортировать собственную библиотеку тегов --%>
-<%@taglib prefix="ad" uri="http://lab8.tag/ad" %>
+<%@taglib prefix="ad" uri="http://lab8.tag/ad"%>
 <html>
 <head>
 <title>Главная страница</title>
-<meta http-equiv='Content-Type' content='text/html; charset=UTF8'/>
+<meta http-equiv='Content-Type' content='text/html; charset=UTF8' />
 </head>
 <body>
 <%-- Подключить заголовок страницы --%>
@@ -17,18 +17,17 @@ pageEncoding="UTF-8" %>
 <h1>Главная страница</h1>
 <%-- Вставить разметку 2-колоночной страницы --%>
 <my:layout2Columns leftColumnWidth="68%" rightColumnWidth="28%">
-<jsp:attribute name="leftColumnBody">
+	<jsp:attribute name="leftColumnBody">
 <%-- Содержание левой колонки передаѐтся как атрибут
 leftColumnBody --%>
 <%-- Извлечь список всех объявлений --%>
-<ad:getAds range="all" var="adListing"
-sort="${sessionScope.sort}" dir="${sessionScope.dir}" />
+<ad:getAds range="all" var="adListing" sort="${sessionScope.sort}"
+			dir="${sessionScope.dir}" />
 <%-- Показать объявления без возможности
 редактирования --%>
-<my:adListing adListing="${adListing}"
-editMode="false" />
+<my:adListing adListing="${adListing}" editMode="false" />
 </jsp:attribute>
-<jsp:attribute name="rightColumnBody">
+	<jsp:attribute name="rightColumnBody">
 <%-- Содержание правой колонки передаѐтся как атрибут
 rightColumnBody --%>
 <%-- Вставить тег отображения сообщения об ошибке --%>
@@ -57,6 +56,6 @@ rightColumnBody --%>
 </jsp:attribute>
 </my:layout2Columns>
 <%-- Вставить нижний заголовок страницы --%>
-<%@ include file="/static/footer.jsp" %>
+<%@ include file="/static/footer.jsp"%>
 </body>
 </html>

@@ -6,8 +6,7 @@ pageEncoding="UTF-8" %>
 <%@taglib prefix="my" tagdir="/WEB-INF/tags" %>
 <%-- Импортировать собственную библиотеку тегов --%>
 <%@taglib prefix="ad" uri="http://lab8.tag/ad" %>
-<%-- Если пользователь не аутентифицирован, то просмотр страницы невозможен -
--%>
+<%-- Если пользователь не аутентифицирован, то просмотр страницы невозможен --%>
 <c:if test="${sessionScope.authUser==null}">
 <c:redirect url="/index.jsp" />
 </c:if>
