@@ -30,6 +30,10 @@ public class Frame extends JFrame {
 	private static final int FRAME_MINIMUM_HEIGHT = 500;
 	private static final int INCOMING_AREA_DEFAULT_ROWS = 10;
 	private static final int OUTGOING_AREA_DEFAULT_ROWS = 5;
+	public String getTarget() {
+		return target;
+	}
+
 	private static final int SMALL_GAP = 5;
 	private static final int MEDIUM_GAP = 10;
 	private static final int LARGE_GAP = 15;
@@ -110,7 +114,7 @@ public class Frame extends JFrame {
 		 */
 	}
 
-	private void sendMessage() {
+	private synchronized void sendMessage() {
 		try {
 			final String message = textAreaOutgoing.getText();
 			if (message.isEmpty()) {
@@ -137,7 +141,7 @@ public class Frame extends JFrame {
 			// Очищаем текстовую область ввода сообщения
 			textAreaOutgoing.setText("");
 			// Закрываем сокет
-			socket.close();
+
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(Frame.this,

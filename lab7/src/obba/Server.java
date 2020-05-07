@@ -21,7 +21,6 @@ public class Server extends Thread {
 	private Map<String, InetSocketAddress> bd = new HashMap<String, InetSocketAddress>();
 	private static final int SERVER_PORT = 4567;
 	private boolean authorized = false;
-	private int x;
 	private String username;
 
 	@SuppressWarnings("null")
@@ -41,7 +40,7 @@ public class Server extends Thread {
 							.getOutputStream());
 					authorize(in, out);
 					String mask = in.readUTF();
-					if (mask.equals("0")) {
+					if (mask.equals((String)"0")) {
 						if (authorized)
 							sendMessage(in);
 					} else if (mask.equals("1")) {
@@ -81,6 +80,21 @@ public class Server extends Thread {
 		if (!password.equals(bdparoles.get(username))) {
 			out.writeUTF("0");
 			authorized = false;
+			/*InetSocketAddress bad=bd.get(username);
+			final Socket socket2 = new Socket(/* "127.0.0.1", x *//*);
+			try{
+					socket2.connect(bad);
+					// Записываем в поток имя
+					DataOutputStream badout = new DataOutputStream(socket2
+							.getOutputStream());
+					badout.writeUTF("Server ");
+					// Записываем в поток сообщение
+					badout.writeUTF("You're a bad man!");
+				} catch (IOException e) {
+					//e.printStackTrace();
+				} finally {
+					socket2.close();
+				}*/
 		} else {
 			out.writeUTF("1");
 			authorized = true;
@@ -88,7 +102,7 @@ public class Server extends Thread {
 		;
 	}
 
-	private void sendMessage(DataInputStream in) throws IOException {
+	private synchronized void sendMessage(DataInputStream in) throws IOException {
 		final String targetName = in.readUTF();
 		// Читаем сообщение
 		InetSocketAddress targetadr = bd.get(targetName);

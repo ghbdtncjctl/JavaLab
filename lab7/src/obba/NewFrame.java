@@ -119,9 +119,7 @@ public class NewFrame extends JFrame {
 				.addContainerGap().addComponent(scrollPaneIncoming).addGap(
 						MEDIUM_GAP).addComponent(messagePanel)
 				.addContainerGap());
-		/*
-		 * if(!authorize(username,password)){ sendButton.setEnabled(false); }
-		 */
+
 	}
 
 
@@ -134,7 +132,7 @@ public class NewFrame extends JFrame {
 	}
 
 
-	private void sendMessage() {
+	private synchronized void sendMessage() {
 		try {
 			final String message = textAreaOutgoing.getText();
 			if (message.isEmpty()) {

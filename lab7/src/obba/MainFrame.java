@@ -50,14 +50,16 @@ public class MainFrame extends JFrame {
 	Thread running;
 	String username;
 	String password;
-	private boolean isCreated=false;
+	private boolean isCreated = false;
 	String sender;
-	public void setSender(String sender){
-		this.sender=sender;
+
+	public void setSender(String sender) {
+		this.sender = sender;
 	}
+
 	NewFrame newframe;
 
-	public MainFrame(int port, String c){
+	public MainFrame(int port, String c) {
 		super(FRAME_TITLE + c);
 		PEER_PORT = port;
 		username = JOptionPane.showInputDialog("username");
@@ -95,13 +97,13 @@ public class MainFrame extends JFrame {
 		final JButton findButton = new JButton("find");
 		findButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (!isCreated){
-				isCreated=true;
-				newframe = new NewFrame(username,password);
-				newframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				newframe.setVisible(true);
+				if (!isCreated) {
+					isCreated = true;
+					newframe = new NewFrame(username, password);
+					newframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+					newframe.setVisible(true);
 				}
-				
+
 			}
 		});
 		// Компоновка элементов панели "Сообщение"
@@ -152,20 +154,22 @@ public class MainFrame extends JFrame {
 								.getInputStream());
 						// Читаем имя отправителя
 						final String senderName = in.readUTF();
-						if(!senderName.equals(sender))
-						{
-						// Читаем сообщение
-						final String message = in.readUTF();
-						// Выводим сообщение в текстовую область
-						textAreaIncoming.append(senderName + " -> " + message
-								+ "\n");}
-						else{
+						if (isCreated && newframe.Created()) {
+							sender = newframe.getFrame().getTarget();
+						}
+						if (!senderName.equals(sender)) {
+							// Читаем сообщение
+							final String message = in.readUTF();
+							// Выводим сообщение в текстовую область
+							textAreaIncoming.append(senderName + " -> "
+									+ message + "\n");
+						} else {
 							// Читаем сообщение
 							final String message = in.readUTF();
 							// Закрываем соединение
-							if(newframe.Created())
+
 							newframe.getFrame().setText(message);
-							}
+						}
 						socket.close();
 					}
 					serverSocket.close();
@@ -186,7 +190,7 @@ public class MainFrame extends JFrame {
 		}
 	}
 
-	private boolean authorize(String un, String pw) {
+	private synchronized boolean authorize(String un, String pw) {
 		try { // Создаем сокет для соединения
 			final Socket socket = new Socket("127.0.0.1", SERVER_PORT); // Открываем
 			// поток
@@ -221,7 +225,7 @@ public class MainFrame extends JFrame {
 		return false;
 	}
 
-	private void sendMessage() {
+	private synchronized void sendMessage() {
 		try {
 			// Получаем необходимые параметры
 			final String targetName = textFieldTo.getText();
@@ -247,7 +251,7 @@ public class MainFrame extends JFrame {
 			// Записываем в поток имя
 			out.writeUTF(username);
 			out.writeUTF(password);
-			out.writeUTF(" ");
+			out.writeUTF("0");
 			out.writeUTF(targetName);
 			// Записываем в поток сообщение
 			out.writeUTF(message);
@@ -256,8 +260,6 @@ public class MainFrame extends JFrame {
 					+ "\n");
 			// Очищаем текстовую область ввода сообщения
 			textAreaOutgoing.setText("");
-			// Закрываем сокет
-			socket.close();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(MainFrame.this,
@@ -274,9 +276,6 @@ public class MainFrame extends JFrame {
 
 	public static void main(String[] args) throws UnknownHostException {
 		new Server().start();
-		String a="g";
-		a=a+"k";
-		System.out.println(a);
 		SwingUtilities.invokeLater(new Runnable() {
 
 			public void run() {
